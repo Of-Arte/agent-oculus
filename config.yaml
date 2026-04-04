@@ -1,0 +1,35 @@
+version: 0.1.0
+
+public:
+  base_url: "https://api.public.com"
+  timeout_seconds: 15
+  retry:
+    max_attempts: 4
+    base_delay_seconds: 0.5
+    max_delay_seconds: 8.0
+    jitter_seconds: 0.25
+  routes:
+    account: "/userapigateway/trading/account"
+    positions: "/userapigateway/trading/positions"
+    orders: "/userapigateway/trading/orders"
+    quotes: "/userapigateway/marketdata/{account_id}/quotes"
+    expirations: "/userapigateway/options/expirations"
+    chain: "/userapigateway/options/chain"
+
+worldmonitor:
+  timeout_seconds: 15
+
+features:
+  read_only: true
+  execution_enabled: false
+  athena_output_enabled: true
+
+schedule:
+  portfolio_snapshot_interval_minutes: 5
+  options_refresh_interval_minutes: 15
+  macro_context_interval_minutes: 15
+  etf_flows_interval_minutes: 15
+  supply_chain_interval_minutes: 5
+
+thresholds:
+  etf_flow_reversal_threshold: 100000000

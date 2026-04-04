@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-finance"
+version = "0.1.0"
+description = "Read-first finance worker for Hermes using Public.com and WorldMonitor"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "publicdotcom-py>=0.1.0",
+  "httpx>=0.28,<1",
+  "PyYAML>=6.0,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0,<9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
