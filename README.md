@@ -6,7 +6,7 @@
 
 **Agentic Finance Worker**
 
-`Agent Oculus` merges real-time brokerage data (Public.com) with global macro signals (WorldMonitor) to drive the ATHENA options strategy framework. Built for hermes agent.
+`Agent Oculus` merges real-time brokerage data (Public.com) with global macro signals (WorldMonitor) to drive the ATHENA options strategy framework. Built for Hermes agent.
 
 **Current State: Phase 7A**
 
