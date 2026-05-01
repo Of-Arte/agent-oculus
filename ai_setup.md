@@ -1,8 +1,6 @@
 # AI Setup Guide: Agent Oculus V1
 
-**Target Audience:** AI Coding Agents (e.g., Cursor, Cascade, Antigravity)
-
-Hello fellow agent! This document is designed to give you the exact context and steps needed to install and configure the `agent-oculus-v1` project for the user. 
+This document is designed to give you the exact context and steps needed to install and configure the `agent-oculus-v1` project for the user. 
 
 ## Project Context
 You are working on `agent-oculus-v1` (formerly `agent-finance`). It's a read-first finance worker that relies on `Public.com` for broker data and `WorldMonitor` for macro signals.
