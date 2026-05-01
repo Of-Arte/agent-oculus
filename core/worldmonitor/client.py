@@ -31,8 +31,6 @@ class WorldMonitorClient:
         jitter_fn: Any = None,
     ) -> None:
         self.base_url = os.getenv('WM_BASE_URL', '').strip().rstrip('/')
-        if not self.base_url:
-            raise RuntimeError('WM_BASE_URL is required for WorldMonitor access.')
         self.api_key = os.getenv('WORLDMONITOR_API_KEY', '').strip()
         self._http = http_client or httpx.AsyncClient(timeout=15)
         self._sleep = sleeper or time.sleep
@@ -53,6 +51,8 @@ class WorldMonitorClient:
         return headers
 
     async def request(self, method: str, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
+        if not self.base_url:
+            raise WMError('WorldMonitor is unavailable: WM_BASE_URL is not configured.')
         url = f'{self.base_url}/{path.lstrip("/")}'
         max_retries = 3
         last_error: Exception | None = None

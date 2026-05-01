@@ -4,7 +4,7 @@ import argparse
 import asyncio
 import json
 import os
-from pathlib import Path
+import time
 from typing import Any
 
 import yaml
@@ -15,6 +15,7 @@ from core.public_api.client import PublicApiClient
 from core.worldmonitor.client import WorldMonitorClient
 from tools.get_macro_context import get_macro_context
 from tools.get_portfolio_snapshot import get_portfolio_snapshot
+from tools.get_signals import get_signals
 
 
 def load_config(config_path: str | Path = 'config.yaml') -> dict[str, Any]:
@@ -44,11 +45,24 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
 def build_scheduler(config: dict[str, Any]) -> BackgroundScheduler:
     schedule = config.get('schedule', {})
     scheduler = BackgroundScheduler()
-    scheduler.add_job(lambda: asyncio.run(get_portfolio_snapshot()), 'interval', minutes=int(schedule.get('portfolio_snapshot_interval_minutes', 5)), id='portfolio_snapshot')
-    scheduler.add_job(lambda: asyncio.run(get_macro_context()), 'interval', minutes=int(schedule.get('macro_context_interval_minutes', 15)), id='macro_context')
-    scheduler.add_job(lambda: asyncio.run(get_macro_context()), 'interval', minutes=int(schedule.get('etf_flows_interval_minutes', 15)), id='etf_flows')
-    scheduler.add_job(lambda: asyncio.run(get_macro_context()), 'interval', minutes=int(schedule.get('supply_chain_interval_minutes', 5)), id='supply_chain')
-    scheduler.add_job(lambda: asyncio.run(get_portfolio_snapshot()), 'interval', minutes=int(schedule.get('options_refresh_interval_minutes', 15)), id='options_refresh')
+    scheduler.add_job(
+        lambda: asyncio.run(get_portfolio_snapshot()),
+        'interval',
+        minutes=int(schedule.get('portfolio_snapshot_interval_minutes', 5)),
+        id='portfolio_snapshot',
+    )
+    scheduler.add_job(
+        lambda: asyncio.run(get_macro_context()),
+        'interval',
+        minutes=int(schedule.get('macro_context_interval_minutes', 15)),
+        id='macro_context',
+    )
+    scheduler.add_job(
+        lambda: asyncio.run(get_signals()),
+        'interval',
+        minutes=int(schedule.get('options_refresh_interval_minutes', 15)),
+        id='options_signals_refresh',
+    )
     return scheduler
 
 
@@ -66,7 +80,7 @@ async def run_once() -> dict[str, Any]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description='agent-finance runtime')
+    parser = argparse.ArgumentParser(description='Agent Oculus V1 runtime')
     parser.add_argument('--config', default='config.yaml')
     parser.add_argument('--dry-run', action='store_true')
     parser.add_argument('--run-once', action='store_true')
@@ -82,7 +96,7 @@ def main() -> None:
     wm_client = WorldMonitorClient()
 
     execution_state = 'execution ENABLED' if summary['execution_enabled'] else 'execution disabled'
-    print(f'agent-finance ready | regime detection active | {execution_state}')
+    print(f'Agent Oculus V1 ready | regime detection active | {execution_state}')
 
     if args.run_once:
         try:
@@ -101,7 +115,6 @@ def main() -> None:
         return
 
     try:
-        import time
         while True:
             time.sleep(1)
     except KeyboardInterrupt:

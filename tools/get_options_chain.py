@@ -9,7 +9,17 @@ import yaml
 from core.public_api.client import PublicApiClient
 from core.public_api.options import PublicOptionsService
 
-# TODO: HERMES REGISTRATION — wire this tool through tools/registry.py -> model_tools.py -> toolsets.py.
+# HERMES_REGISTRATION_COMPLETE
+# ============================
+# This tool is now registered in the Hermes backend via:
+#   /home/agentv/.hermes/hermes-agent/tools/finance_tools.py
+#   → tools/registry.py register() calls
+#   → model_tools.py _discover_tools() import
+#   → toolsets.py "finance" toolset definition
+#
+# Toolset: finance
+# Gating: place_order is execution-gated (EXECUTION_ENABLED=false by default)
+
 
 
 def load_config(config_path: str | Path = 'config.yaml') -> dict[str, Any]:

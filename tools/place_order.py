@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from pathlib import Path
 from typing import Any
 
@@ -11,7 +12,17 @@ from core.public_api.client import PublicApiClient
 from core.public_api.orders import PublicOrdersService
 from core.schemas import OrderRequest
 
-# TODO: HERMES REGISTRATION — wire this tool through tools/registry.py -> model_tools.py -> toolsets.py.
+# HERMES_REGISTRATION_COMPLETE
+# ============================
+# This tool is now registered in the Hermes backend via:
+#   /home/agentv/.hermes/hermes-agent/tools/finance_tools.py
+#   → tools/registry.py register() calls
+#   → model_tools.py _discover_tools() import
+#   → toolsets.py "finance" toolset definition
+#
+# Toolset: finance
+# Gating: place_order is execution-gated (EXECUTION_ENABLED=false by default)
+
 
 
 def load_config(config_path: str | Path = 'config.yaml') -> dict[str, Any]:
@@ -21,6 +32,14 @@ def load_config(config_path: str | Path = 'config.yaml') -> dict[str, Any]:
 
 async def place_order(order_request: dict, config_path: str | Path = 'config.yaml') -> dict:
     config = load_config(config_path)
+    # Fail fast — do not construct any client if execution is globally disabled.
+    enabled_in_env = os.getenv('EXECUTION_ENABLED', 'false').strip().lower() == 'true'
+    enabled_in_config = bool(config.get('features', {}).get('execution_enabled', False))
+    if not enabled_in_env or not enabled_in_config:
+        raise ExecutionDisabledError(
+            'Order execution is disabled. Set EXECUTION_ENABLED=true and '
+            'features.execution_enabled: true in config.yaml.'
+        )
     required = ['symbol', 'side', 'quantity', 'order_type']
     missing = [field for field in required if field not in order_request]
     if missing:

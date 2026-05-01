@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-finance"
+name = "agent-oculus-v1"
 version = "0.1.0"
 description = "Read-first finance worker for Hermes using Public.com and WorldMonitor"
 readme = "README.md"
@@ -12,11 +12,17 @@ dependencies = [
   "publicdotcom-py>=0.1.0",
   "httpx>=0.28,<1",
   "PyYAML>=6.0,<7",
+  "APScheduler>=3.10,<4",
+  "python-dotenv>=1.0,<2",
+  "numpy>=2.0,<3",
+  "pandas>=2.2,<3",
+  "yfinance>=0.2.40,<1",
 ]
 
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0,<9",
+  "mypy>=1.10,<2",
 ]
 
 [tool.pytest.ini_options]

@@ -155,3 +155,15 @@ def test_unknown_field_ignored(monkeypatch):
         assert len(items) == 1
         assert items[0].symbol == 'USDC'
     asyncio.run(scenario())
+
+
+def test_wm_client_no_base_url_raises_on_request(monkeypatch):
+    monkeypatch.delenv('WM_BASE_URL', raising=False)
+
+    async def scenario():
+        from core.worldmonitor.client import WorldMonitorClient, WMError
+        client = WorldMonitorClient()  # must NOT raise here
+        with pytest.raises(WMError, match='WM_BASE_URL'):
+            await client.request('GET', '/test')
+
+    asyncio.run(scenario())

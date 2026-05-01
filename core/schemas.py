@@ -24,6 +24,13 @@ DisruptionLevel = Literal['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
 AlertDirection = Literal['BULLISH', 'BEARISH', 'NEUTRAL']
 AlertSeverity = Literal['INFO', 'WARNING', 'CRITICAL']
 
+VolatilityRegime = Literal[
+    'HIGH_VOLATILITY',
+    'MEDIUM_VOLATILITY',
+    'LOW_VOLATILITY',
+    'TRANSITIONAL',
+]
+
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -337,7 +344,9 @@ class PositionSnapshot:
     def unrealized_pnl_pct(self) -> float:
         if self.average_cost in (None, 0):
             return 0.0
-        return ((self.market_value / max(self.quantity, 1e-9)) - self.average_cost) / self.average_cost * 100.0
+        if not self.quantity:
+            return 0.0
+        return ((self.market_value / self.quantity) - self.average_cost) / self.average_cost * 100.0
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -394,6 +403,47 @@ class OptionContract:
 class IVMetrics:
     iv_rank: float | None
     implied_volatility: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(slots=True)
+class IVRankResult:
+    symbol: str
+    current_iv: float
+    iv_rank: float
+    iv_percentile: float
+    vol_regime: VolatilityRegime
+    lookback_days: int
+    computed_at: datetime
+    low_52w: float
+    high_52w: float
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            'symbol': self.symbol,
+            'current_iv': self.current_iv,
+            'iv_rank': self.iv_rank,
+            'iv_percentile': self.iv_percentile,
+            'vol_regime': self.vol_regime,
+            'lookback_days': self.lookback_days,
+            'computed_at': self.computed_at.isoformat(),
+            'low_52w': self.low_52w,
+            'high_52w': self.high_52w,
+        }
+
+
+@dataclass(slots=True)
+class StrategyRecommendation:
+    strategy_type: str
+    rationale: str
+    max_allocation: float
+    target_dte: int
+    target_delta_short: float
+    sizing_contracts: int
+    blocked: bool
+    blocked_reason: str | None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -532,6 +582,7 @@ class FinanceContext:
     regime: str
     regime_flags: list[str]
     timestamp: str
+    iv_ranks: list[IVRankResult] = field(default_factory=list)
     alerts: list[Alert] = field(default_factory=list)
     previous_regime: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -552,6 +603,7 @@ class FinanceContext:
             chokepoints=None,
             trade_restrictions=None,
             bis_policy_rates=None,
+            iv_ranks=[],
             signals=[],
             regime='TRANSITIONAL',
             regime_flags=[],
@@ -573,6 +625,7 @@ class FinanceContext:
             'chokepoints': [item.to_dict() for item in self.chokepoints] if self.chokepoints is not None else None,
             'trade_restrictions': [item.to_dict() for item in self.trade_restrictions] if self.trade_restrictions is not None else None,
             'bis_policy_rates': [item.to_dict() for item in self.bis_policy_rates] if self.bis_policy_rates is not None else None,
+            'iv_ranks': [item.to_dict() for item in self.iv_ranks],
             'signals': [signal.to_dict() for signal in self.signals],
             'regime': self.regime,
             'regime_flags': self.regime_flags,
