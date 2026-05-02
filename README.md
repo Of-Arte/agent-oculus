@@ -1,7 +1,7 @@
 # Agent Oculus V1 (`agent-oculus-v1`)
 
 > [!CAUTION]
-> **IMPORTANT: DISCLAIMER**
+> **IMPORTANT**
 > This project is for **educational and experimental purposes only**. It is not intended for live trading or financial decision making. 
 
 **Agentic Finance Worker**
