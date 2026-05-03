@@ -52,6 +52,52 @@ def test_retry_on_503(monkeypatch):
     asyncio.run(scenario())
 
 
+def test_wm_client_auth_error_401_does_not_retry(monkeypatch):
+    async def scenario() -> None:
+        monkeypatch.setenv('WM_BASE_URL', 'https://wm.invalid')
+        http = AsyncMockHttpClient([
+            MockResponse(401, payload={'error': 'nope'}),
+            MockResponse(200, payload={'ok': True}),
+        ])
+        from core.worldmonitor.client import WMAuthError
+
+        client = WorldMonitorClient(http_client=http, sleeper=lambda _: None, jitter_fn=lambda: 0)
+        try:
+            await client.request('GET', '/api/market/v1/get-fear-greed-index')
+        except WMAuthError:
+            assert True
+        else:
+            raise AssertionError('Expected WMAuthError on 401')
+        assert len(http.calls) == 1, 'auth errors should not be retried'
+        await client.close()
+
+    asyncio.run(scenario())
+
+
+def test_wm_client_rate_limit_retries_then_raises(monkeypatch):
+    async def scenario() -> None:
+        monkeypatch.setenv('WM_BASE_URL', 'https://wm.invalid')
+        http = AsyncMockHttpClient([
+            MockResponse(429, payload={'error': 'rate limit'}),
+            MockResponse(429, payload={'error': 'rate limit'}),
+            MockResponse(429, payload={'error': 'rate limit'}),
+            MockResponse(429, payload={'error': 'rate limit'}),
+        ])
+        from core.worldmonitor.client import WMRateLimitError
+
+        client = WorldMonitorClient(http_client=http, sleeper=lambda _: None, jitter_fn=lambda: 0)
+        try:
+            await client.request('GET', '/api/market/v1/get-fear-greed-index')
+        except WMRateLimitError:
+            assert True
+        else:
+            raise AssertionError('Expected WMRateLimitError after retries exhausted')
+        assert len(http.calls) == 4, 'expected max_retries+1 attempts'
+        await client.close()
+
+    asyncio.run(scenario())
+
+
 def test_stablecoin_depeg_flag(monkeypatch):
     async def scenario() -> None:
         monkeypatch.setenv('WM_BASE_URL', 'https://wm.invalid')

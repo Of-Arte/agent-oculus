@@ -142,3 +142,55 @@ def test_greeks_cast_from_string(base_config):
     assert isinstance(contracts[0].delta, float)
     assert contracts[0].strike == 190.0
     assert contracts[0].iv == 0.22
+
+
+def test_public_bootstrap_empty_accounts_raises(base_config):
+    async def scenario() -> None:
+        bootstrap_http = AsyncMockHttpClient([
+            MockResponse(200, payload={'accounts': []}),
+        ])
+        client = PublicApiClient(
+            base_config['public'],
+            bearer_token='token-123',
+            sdk_transport=MockSdkTransport(portfolio={}),
+            bootstrap_http_client=bootstrap_http,
+            sleeper=lambda _: None,
+            jitter_fn=lambda: 0,
+        )
+        try:
+            await client.fetch_account_id()
+        except RuntimeError as exc:
+            msg = str(exc).lower()
+            assert 'bootstrap failed' in msg
+            assert 'accounts' in msg
+        else:
+            raise AssertionError('Expected RuntimeError when accounts list is empty')
+        await client.close()
+
+    asyncio.run(scenario())
+
+
+def test_public_bootstrap_missing_account_id_raises(base_config):
+    async def scenario() -> None:
+        bootstrap_http = AsyncMockHttpClient([
+            MockResponse(200, payload={'accounts': [{'accountId': ''}]}),
+        ])
+        client = PublicApiClient(
+            base_config['public'],
+            bearer_token='token-123',
+            sdk_transport=MockSdkTransport(portfolio={}),
+            bootstrap_http_client=bootstrap_http,
+            sleeper=lambda _: None,
+            jitter_fn=lambda: 0,
+        )
+        try:
+            await client.fetch_account_id()
+        except RuntimeError as exc:
+            msg = str(exc).lower()
+            assert 'bootstrap failed' in msg
+            assert 'accountid' in msg
+        else:
+            raise AssertionError('Expected RuntimeError when accountId is missing')
+        await client.close()
+
+    asyncio.run(scenario())
