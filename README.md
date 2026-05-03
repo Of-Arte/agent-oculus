@@ -7,11 +7,9 @@ This repo is intentionally **execution-safe by default**: it focuses on **contex
 
 ---
 
-## Quick setup (recommended: Hermes)
+## Quick setup (Hermes Agent)
 
-If you’re using Hermes Agent, Oculus is meant to feel like an “agent pack”: one command install, then `/agent oculus`.
-
-### Install (one command)
+### Install
 
 ```bash
 git clone https://github.com/Of-Arte/agent-oculus.git
