@@ -159,6 +159,9 @@ cython_debug/
 .DS_Store
 Thumbs.db
 
+# Repo-local Hermes artifacts
+#.hermes/   # (legacy) - keep ignored if it ever reappears
+
 # IDEs
 .vscode/
 .idea/

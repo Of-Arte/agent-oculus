@@ -36,11 +36,10 @@ agent-oculus/
 ├── config.yaml                   # Thresholds/schedule config
 ├── core/                         # Clients + analytics + schemas
 ├── tools/                        # Atomic async primitives
-├── .hermes/plugins/oculus/        # Hermes plugin toolpack (ships with repo)
-├── hermes-skill-oculus.md         # Hermes skill (scope + intent mapping)
-├── oculus.agent-pack.yaml         # Hermes /agent pack manifest
-└── scripts/                       # Install helpers
-```
+- hermes/plugin/oculus/          # Hermes plugin toolpack (ships with repo)
+- hermes/skills/oculus/SKILL.md   # Hermes skill (scope + intent mapping)
+- hermes/agent-packs/oculus.yaml  # Hermes /agent pack manifest
+- scripts/                        # Install helpers
 
 ---
 

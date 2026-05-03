@@ -4,7 +4,7 @@ set -euo pipefail
 # Installs the Oculus skill into Hermes so /agent oculus launches with native context.
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC="$REPO_ROOT/hermes-skill-oculus.md"
+SRC="$REPO_ROOT/hermes/skills/oculus/SKILL.md"
 
 if [ ! -f "$SRC" ]; then
   echo "Missing skill source: $SRC" >&2

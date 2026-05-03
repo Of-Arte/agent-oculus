@@ -5,7 +5,7 @@ set -euo pipefail
 # so it can be enabled with: hermes plugins enable oculus
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC_DIR="$REPO_ROOT/.hermes/plugins/oculus"
+SRC_DIR="$REPO_ROOT/hermes/plugin/oculus"
 
 if [ ! -d "$SRC_DIR" ]; then
   echo "Missing plugin dir: $SRC_DIR" >&2

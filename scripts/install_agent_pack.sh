@@ -5,7 +5,7 @@ set -euo pipefail
 # This enables Hermes CLI /agent oculus.
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC="$REPO_ROOT/oculus.agent-pack.yaml"
+SRC="$REPO_ROOT/hermes/agent-packs/oculus.yaml"
 
 if [ ! -f "$SRC" ]; then
   echo "Missing manifest: $SRC" >&2
