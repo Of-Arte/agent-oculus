@@ -1,7 +1,7 @@
 # Agent Oculus (agent-oculus)
 
 Agent Oculus is an open-source **finance context worker**.
-It pulls **portfolio + options data (Public.com)** and **macro/regime context (WorldMonitor)** and returns structured outputs that an agent runtime (especially **Hermes Agent**) can use for decisions.
+It pulls **portfolio + options data (Public.com)** and **macro/regime context (WorldMonitor)** and returns structured outputs that an agent runtime (especially **Hermes Agent**) can use for context.
 
 This repo is intentionally **execution-safe by default**: it focuses on **context + signals**, not unattended trading.
 
