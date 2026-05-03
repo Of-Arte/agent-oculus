@@ -118,12 +118,18 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
+!.env.example
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Ruff / uv
+.ruff_cache/
+.uv/
 
 # Spyder project settings
 .spyderproject

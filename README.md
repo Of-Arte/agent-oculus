@@ -1,69 +1,69 @@
-# Agent Oculus V1 (`agent-oculus-v1`)
+# Agent Oculus (agent-oculus)
 
-> [!CAUTION]
-> **IMPORTANT: DISCLAIMER**
-> This project is for **educational and experimental purposes only**. It is not intended for live trading or financial decision making.
+Agent Oculus is an open-source **finance context worker**: it collects broker + macro context (Public.com + WorldMonitor) and returns structured outputs that an agent runtime (especially **Hermes Agent**) can use to make decisions.
 
-A **Python finance worker** that fetches broker + macro context and exposes it as:
-- a runnable script (`main.py`) for one-shot dumps or scheduled polling, and
-- a set of importable primitives in `tools/` (good building blocks for an agent to call).
-
-This is not a fully self-contained "AI agent" by itself. The intended use is: **Hermes (or any agent runtime) orchestrates these primitives**.
-
-- ✅ Works as a CLI/script (`python main.py --run-once` or scheduler mode)
-- ✅ Modules are cleanly separated (`core/`, `tools/`)
-- ✅ Can be used by an agent today (via Hermes skill + native low-bloat toolset)
-- ⚠️ Live execution is intentionally gated (default: disabled)
+This repository is intentionally **execution-safe by default**. It is designed for education/experimentation and for building agentic pipelines where *analysis and intent* are separated from *trade execution*.
 
 ---
 
-## What it does
+## Disclaimer
 
-- Pulls broker context from Public.com (portfolio snapshot, buying power, positions)
-- Pulls macro context from WorldMonitor (fear/greed, market radar verdict, stablecoins, ETF flows, energy, chokepoints, trade policy, BIS rates)
-- Produces JSON-able outputs suitable for:
-  - an agent deciding a strategy
-  - a monitor/alert loop
-  - later execution wiring (still gated)
-
-Safety note:
-- Any execution pathway must remain **explicitly gated** via env/config.
+This project is for **educational and experimental purposes only**. It is **not** financial advice and is not intended for live trading. Any execution pathway must remain explicitly gated.
 
 ---
 
-## Repo layout
+## What you get
 
-```text
-agent-oculus-v1/
-├── main.py                 # Entrypoint & APScheduler runtime
-├── config.yaml             # System & threshold configuration
-├── core/                   # Clients + analytics + schemas
-├── tools/                  # Atomic async primitives
-└── tests/
+Core capabilities:
+- Portfolio snapshot ingestion from **Public.com**
+- Macro/regime context ingestion from **WorldMonitor**
+- Normalized “signals” / context objects suitable for downstream strategy logic
+- A standalone runtime (one-shot or scheduled polling)
+- Hermes integration artifacts (skill + plugin toolpack + /agent launcher manifest)
+
+Design goals:
+- **Composable primitives**: functions under `tools/` are useful building blocks
+- **Low tool-schema bloat**: Hermes integration exposes *two coarse tools* instead of dozens
+- **Safety gates**: execution is disabled unless you explicitly enable it
+
+---
+
+## Repository layout
+
+```
+agent-oculus/
+├── main.py                       # Entrypoint (one-shot + scheduler)
+├── config.yaml                   # Thresholds/schedule config
+├── core/                         # Clients + analytics + schemas
+├── tools/                        # Atomic async primitives
+├── .hermes/plugins/oculus/        # Hermes plugin toolpack (ships with repo)
+├── hermes-skill-oculus.md         # Hermes skill (scope + intent mapping)
+├── oculus.agent-pack.yaml         # Hermes /agent pack manifest
+└── scripts/                       # Install helpers
 ```
 
 ---
 
-## Install & run (standalone)
+## Quickstart (standalone)
 
 ### Prerequisites
 - Python 3.11+
 - Git
+- WorldMonitor instance (local or hosted)
 
-### Setup
+### Install
+
 ```bash
-git clone <repository-url>
-cd agent-oculus-v1
+git clone https://github.com/Of-Arte/agent-oculus.git
+cd agent-oculus
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -e .[dev]
 cp .env.example .env
 ```
 
-### WorldMonitor dependency
-This repo expects a WorldMonitor instance for macro signals.
+### Run WorldMonitor (local)
 
-Local dev server:
 ```bash
 git clone https://github.com/koala73/worldmonitor.git ../worldmonitor
 cd ../worldmonitor
@@ -71,19 +71,21 @@ npm install
 npm run dev:finance
 ```
 
-Then set in `.env` (back in this repo):
-- `WM_BASE_URL=http://localhost:8000` (or whatever your WM uses)
+Then set in your `.env` (back in `agent-oculus/`):
+- `WM_BASE_URL=http://localhost:8000` (adjust if needed)
 
-### Environment variables
+### Configure environment
+
 Edit `.env`:
 - `PUBLIC_ACCESS_TOKEN` (required for broker data)
-- `WM_BASE_URL` (required for macro signals)
+- `WM_BASE_URL` (required for macro)
 - Optional: `FINNHUB_API_KEY`, `EIA_API_KEY`
-- `EXECUTION_ENABLED=false` (keep false unless you *really* mean it)
+- `EXECUTION_ENABLED=false` (keep false unless you explicitly intend otherwise)
 
 ### Run
+
 ```bash
-# One-shot (prints JSON)
+# One-shot JSON dump
 python main.py --run-once
 
 # Long-running scheduler worker
@@ -95,72 +97,69 @@ pytest -v
 
 ---
 
-## Use it with Hermes Agent (recommended)
+## Hermes Agent integration (recommended)
 
-There are two integration tiers:
+You have two tiers:
 
-### Tier 1 (works everywhere): Hermes runs the script via terminal
-1) Start Hermes in this repo:
+### Tier 1: Hermes drives the repo via terminal
+This works on any Hermes install.
+
 ```bash
-cd /path/to/agent-oculus-v1
+cd /path/to/agent-oculus
 hermes
 ```
 
-2) Ask:
-- "Run `python main.py --run-once` and summarize the portfolio + macro context."
+Then ask Hermes to run:
+- `python main.py --run-once`
 
-### Tier 2 (best practice, low-bloat): Hermes plugin toolpack + /agent launcher
-This repo ships:
-- a Hermes skill that scope-locks the agent and maps intents like "check portfolio"
-- a Hermes plugin (`oculus`) that registers **two coarse tools** (low-bloat)
-- an agent-pack manifest so you can launch it via Hermes `/agent`
+### Tier 2: Best practice (native tools, low-bloat) + `/agent` launcher
+This repo ships Hermes integration artifacts:
+- **Skill**: scope lock + intent mapping (“check portfolio” → fetch context)
+- **Plugin toolpack**: registers **two coarse tools** to avoid tool-schema bloat
+  - `oculus_healthcheck`
+  - `oculus_get_context`
+- **Agent pack manifest**: allows launching via Hermes `/agent`
 
-Install:
+Install everything (one command):
+
 ```bash
-# from repo root
-./scripts/install_oculus_skill.sh
-./scripts/install_oculus_plugin.sh
 ./scripts/install_agent_pack.sh
-
-# one-time (gives Oculus its own memory/config boundary)
-hermes profile create oculus
-
-# enable plugin once
-hermes plugins enable oculus
 ```
 
-Then set `OCULUS_WORKDIR` in the **oculus profile** env:
-- run: `hermes -p oculus config env-path`
-- set: `OCULUS_WORKDIR=/absolute/path/to/agent-oculus`
+What the script does:
+- installs the skill into `~/.hermes/skills/oculus/`
+- installs the plugin into `~/.hermes/plugins/oculus/`
+- enables the plugin (if `hermes` is available)
+- creates the `oculus` Hermes profile (if missing)
+- sets `OCULUS_WORKDIR` in the oculus profile env to this repo path
+- installs the `/agent` manifest into `~/.hermes/agent-packs/`
 
-Usage:
-1) Open Hermes anywhere
-2) Run:
-- `/agent oculus`
+Then:
+1) start Hermes anywhere: `hermes`
+2) launch: `/agent oculus`
 
-What happens:
-- Hermes relaunches into this repo + profile and preloads the `oculus` skill.
-- If the plugin is enabled, Hermes also exposes the `oculus` toolset.
-
-Native tools (low-bloat):
-- `oculus_healthcheck` (workdir + env sanity)
-- `oculus_get_context` (portfolio + macro + derived signals)
-
-### Config: OCULUS_WORKDIR
-If your repo path differs from what Hermes expects, set:
-- `OCULUS_WORKDIR=/absolute/path/to/agent-oculus-v1`
-
-Best place to set it:
-- in the `oculus` Hermes profile env file (`hermes config env-path` while using profile `oculus`).
+Note:
+- If the oculus tools don’t show up, run `/tools` and enable the `oculus` toolset.
 
 ---
 
-## If you’re building an agent on top of this
+## Safety model
 
-Treat this repo as a reliable “finance context substrate”. The agent layer should:
-- call the primitives (or `oculus_get_context`)
-- decide strategy
-- (later) produce an OrderIntent-style output
-- keep execution gated
+- `EXECUTION_ENABLED` is expected to remain `false` by default.
+- This repo is optimized for **context generation** and **agent decision support**, not unattended execution.
 
-See also: `ai_setup.md`.
+---
+
+## Contributing
+
+PRs welcome. Please:
+- keep tool surfaces minimal (avoid adding many small tools unless necessary)
+- keep schemas short (tool schema text is prompt context)
+- don’t weaken execution safety gates
+- add tests for any data-shape contracts you introduce
+
+---
+
+## License
+
+MIT (see `LICENSE` if present in this repository). If missing, treat as all-rights-reserved until added.
