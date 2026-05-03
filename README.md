@@ -109,20 +109,29 @@ hermes
 2) Ask:
 - "Run `python main.py --run-once` and summarize the portfolio + macro context."
 
-### Tier 2 (best practice, low-bloat): native Hermes tools + /agent launcher
+### Tier 2 (best practice, low-bloat): Hermes plugin toolpack + /agent launcher
 This repo ships:
 - a Hermes skill that scope-locks the agent and maps intents like "check portfolio"
+- a Hermes plugin (`oculus`) that registers **two coarse tools** (low-bloat)
 - an agent-pack manifest so you can launch it via Hermes `/agent`
 
 Install:
 ```bash
 # from repo root
 ./scripts/install_oculus_skill.sh
+./scripts/install_oculus_plugin.sh
 ./scripts/install_agent_pack.sh
 
 # one-time (gives Oculus its own memory/config boundary)
 hermes profile create oculus
+
+# enable plugin once
+hermes plugins enable oculus
 ```
+
+Then set `OCULUS_WORKDIR` in the **oculus profile** env:
+- run: `hermes -p oculus config env-path`
+- set: `OCULUS_WORKDIR=/absolute/path/to/agent-oculus`
 
 Usage:
 1) Open Hermes anywhere
@@ -131,13 +140,11 @@ Usage:
 
 What happens:
 - Hermes relaunches into this repo + profile and preloads the `oculus` skill.
+- If the plugin is enabled, Hermes also exposes the `oculus` toolset.
 
 Native tools (low-bloat):
 - `oculus_healthcheck` (workdir + env sanity)
 - `oculus_get_context` (portfolio + macro + derived signals)
-
-Note:
-- The native toolset lives in Hermes core (not in this repo). If you are not on the patched Hermes build, Tier 2 won’t be available.
 
 ### Config: OCULUS_WORKDIR
 If your repo path differs from what Hermes expects, set:

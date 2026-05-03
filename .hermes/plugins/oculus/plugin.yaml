@@ -1,0 +1,10 @@
+name: oculus
+version: 0.1.0
+description: "Agent Oculus toolpack (low-bloat): healthcheck + get_context (Public.com + WorldMonitor)"
+provides_tools:
+  - oculus_healthcheck
+  - oculus_get_context
+requires_env:
+  - name: OCULUS_WORKDIR
+    description: "Absolute path to the agent-oculus repo (so the plugin can import tools/*)."
+    secret: false
