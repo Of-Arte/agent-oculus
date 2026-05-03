@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import asyncio
 
+import pytest
+
 from core.worldmonitor.btc_etf_flows import WorldMonitorBtcEtfFlowService
 from core.worldmonitor.client import WorldMonitorClient
 from core.worldmonitor.market_radar import WorldMonitorMarketRadarService
