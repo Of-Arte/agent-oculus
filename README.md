@@ -38,7 +38,7 @@ If you don’t see the tools:
 Optional UI polish:
 - `hermes config set display.skin oculus`
 
-### What Oculus adds to Hermes (low-bloat by design)
+### What Oculus adds to Hermes
 
 Tools (2 total):
 - `oculus_healthcheck` — verify env/workdir/safety gate
@@ -88,7 +88,7 @@ This prints `PORTFOLIO_SNAPSHOT`, `MACRO_CONTEXT`, and `RUN_ONCE_RESULT` as JSON
 
 ---
 
-## Scheduled worker (polling mode)
+## Scheduled worker
 
 Oculus can also run as a **long-running scheduled worker**.
 This is useful when you want a continuously refreshed “context cache” in memory for repeated calls (e.g. interactive Hermes sessions, dashboards, or your own downstream pipeline).
@@ -100,15 +100,6 @@ This is useful when you want a continuously refreshed “context cache” in mem
 python main.py
 ```
 
-What it does (today):
-- Runs periodic jobs (portfolio snapshot / macro context / option refresh)
-- Prints a startup config summary + “ready” banner
-- Keeps refreshed results in-process (in-memory cache inside the worker)
-
-What it does NOT do (yet):
-- It does not publish to Redis, write to disk, or push to webhooks by default.
-  If you want that, we can add a clean “sink” interface (file/redis/webhook) without turning this into a bloated agent framework.
-
 ### Configure the schedule
 
 Intervals live in `config.yaml` under `schedule:`
@@ -119,21 +110,6 @@ schedule:
   macro_context_interval_minutes: 15
   options_refresh_interval_minutes: 15
 ```
-
-Tip: you can sanity-check config/env without running the loop:
-
-```bash
-python main.py --dry-run
-```
-
-### Production-ish ways to run it
-
-Pick one:
-- `systemd` service
-- `pm2` (works fine for python processes)
-- Docker (simple container + restart policy)
-
----
 
 ## Repository layout
 
