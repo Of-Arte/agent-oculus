@@ -193,6 +193,25 @@ def test_format_for_hermes_shape():
         assert key in payload
 
 
+def test_format_for_hermes_does_not_invent_symbols():
+    context = _context_with_chain_rank(75)
+    payload = format_for_hermes(context)
+    summary = payload['summary']
+    assert set(summary['active_symbols']) == {'AAPL', 'TSLA'}
+    assert summary['position_count'] == 2
+
+
+def test_format_for_hermes_stablecoin_depegs_only_when_flagged():
+    context = _context_with_chain_rank(75)
+    # Only USDT is marked depegged here.
+    context.stablecoins = [
+        StablecoinStatus('USDT', 0.99, 1.0, -1.0, True),
+        StablecoinStatus('USDC', 1.0, 1.0, 0.0, False),
+    ]
+    payload = format_for_hermes(context)
+    assert payload['summary']['depegged_stablecoins'] == ['USDT']
+
+
 async def _ret(value):
     return value
 
