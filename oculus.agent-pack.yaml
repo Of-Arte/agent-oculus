@@ -1,0 +1,14 @@
+# Hermes /agent pack manifest for Agent Oculus V1
+# Install by copying this file to: ~/.hermes/agent-packs/oculus.yaml
+
+name: oculus
+description: "Agent Oculus V1 — broker + macro context worker (Public.com + WorldMonitor)"
+workdir: "/home/agentv/workspace/agent-finance"
+profile: "oculus"
+skills:
+  - oculus
+toolsets:
+  - terminal
+  - file
+  - web
+  - oculus
