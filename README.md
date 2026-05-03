@@ -1,4 +1,4 @@
-# Agent Oculus(`agent-oculus-v1`)
+# Agent Oculus
 
 > [!CAUTION]
 > **IMPORTANT**
