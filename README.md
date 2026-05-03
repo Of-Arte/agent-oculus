@@ -10,7 +10,6 @@ A **Python finance worker** that fetches broker + macro context and exposes it a
 
 This is not a fully self-contained "AI agent" by itself. The intended use is: **Hermes (or any agent runtime) orchestrates these primitives**.
 
-Current state (honest):
 - ✅ Works as a CLI/script (`python main.py --run-once` or scheduler mode)
 - ✅ Modules are cleanly separated (`core/`, `tools/`)
 - ✅ Can be used by an agent today (via Hermes skill + native low-bloat toolset)
