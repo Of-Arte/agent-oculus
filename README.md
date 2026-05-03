@@ -1,4 +1,4 @@
-# Agent Oculus V1 (`agent-oculus-v1`)
+# Agent Oculus(`agent-oculus-v1`)
 
 > [!CAUTION]
 > **IMPORTANT**
@@ -8,7 +8,7 @@
 
 `Agent Oculus` merges real-time brokerage data (Public.com) with global macro signals (WorldMonitor) to drive the ATHENA options strategy framework. Built for Hermes agent.
 
-**Current State: Phase 7A**
+**Current State: In progress**
 
 ---
 
