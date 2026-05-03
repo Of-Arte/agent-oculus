@@ -1,13 +1,19 @@
-# Agent Oculus V1 (`agent-oculus-v1`)
+# Agent Oculus
 
 > [!CAUTION]
+<<<<<<< HEAD
 > **IMPORTANT: DISCLAIMER**
 > This project is for **educational and experimental purposes only**. It is not intended for live trading or financial decision making.
+=======
+> **IMPORTANT**
+> This project is for **educational and experimental purposes only**. It is not intended for live trading or financial decision making. 
+>>>>>>> 3df70575788ada988bbc68847c28c4632f507038
 
 A **Python finance worker** that fetches broker + macro context and exposes it as:
 - a runnable script (`main.py`) for one-shot dumps or scheduled polling, and
 - a set of importable “tool-shaped” functions in `tools/` (good primitives for an agent to call).
 
+<<<<<<< HEAD
 If you came here expecting a fully self-contained “AI agent”: it’s not that (yet). Today it’s closer to a **library + worker runtime** that a higher-level agent (especially Hermes Agent) can orchestrate.
 
 Current state (honest):
@@ -15,6 +21,11 @@ Current state (honest):
 - ✅ Code is structured into modules (`core/`, `tools/`)
 - ✅ Designed to be *agent-callable* (atomic functions in `tools/`)
 - ⚠️ Hermes integration is not “plug-and-play install” from this repo alone (see Roadmap)
+=======
+`Agent Oculus` merges real-time brokerage data (Public.com) with global macro signals (WorldMonitor) to drive the ATHENA options strategy framework.
+
+**Current State: Core capabilities established, MVP live.**
+>>>>>>> 3df70575788ada988bbc68847c28c4632f507038
 
 ---
 
