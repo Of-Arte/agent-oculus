@@ -1,0 +1,32 @@
+# Oculus skin for Hermes CLI
+# Install to ~/.hermes/skins/oculus.yaml (see scripts/install_agent_pack.sh)
+# Activate:
+#   hermes config set display.skin oculus
+
+name: oculus
+description: "Oculus: dark, finance-themed skin"
+
+colors:
+  banner_primary: "#7DD3FC"   # sky-300
+  banner_dim: "#A3A3A3"       # neutral-400
+  accent: "#22C55E"           # green-500
+  tool_prefix: "#38BDF8"      # sky-400
+  warning: "#FBBF24"          # amber-400
+  error: "#F87171"            # red-400
+
+branding:
+  title: "Oculus"
+  subtitle: "Portfolio + Macro Context"
+
+spinner:
+  style: "kaomoji"
+  faces:
+    - "(⌐■_■)"
+    - "(•_•)"
+    - "(¬‿¬)"
+  verbs:
+    - "scanning"
+    - "synthesizing"
+    - "watching"
+
+# Keep effects minimal: skins should not spam output.

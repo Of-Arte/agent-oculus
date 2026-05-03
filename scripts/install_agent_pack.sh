@@ -31,6 +31,10 @@ if [ -x "$REPO_ROOT/scripts/install_oculus_plugin.sh" ]; then
   "$REPO_ROOT/scripts/install_oculus_plugin.sh" || true
 fi
 
+if [ -x "$REPO_ROOT/scripts/install_oculus_skin.sh" ]; then
+  "$REPO_ROOT/scripts/install_oculus_skin.sh" || true
+fi
+
 # If Hermes is installed, we can do the last-mile setup automatically.
 if command -v hermes >/dev/null 2>&1; then
   # Create profile if missing (ignore errors if it already exists)
@@ -54,8 +58,10 @@ if command -v hermes >/dev/null 2>&1; then
 fi
 
 echo ""
-echo "Done. Next:" 
-echo "  1) Start Hermes anywhere: hermes"
-echo "  2) Run: /agent oculus"
+echo "Done. Quick start:" 
+echo "  1) Start Hermes: hermes"
+echo "  2) In-session: /agent oculus"
+echo "  3) If tools aren't visible: /tools -> enable 'oculus'"
 echo ""
-echo "If the oculus tools don't show up, run /tools and enable the 'oculus' toolset."
+echo "Optional polish:" 
+echo "  - Activate Oculus skin: hermes config set display.skin oculus"

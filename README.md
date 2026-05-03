@@ -98,47 +98,46 @@ pytest -v
 
 ## Hermes Agent integration (recommended)
 
-You have two tiers:
+Hermes is the intended UX: Oculus behaves like a selectable “agent pack” with a dedicated profile, a scope-locking skill, and a tiny (low-bloat) tool surface.
 
-### Tier 1: Hermes drives the repo via terminal
-This works on any Hermes install.
-
-```bash
-cd /path/to/agent-oculus
-hermes
-```
-
-Then ask Hermes to run:
-- `python main.py --run-once`
-
-### Tier 2: Best practice (native tools, low-bloat) + `/agent` launcher
-This repo ships Hermes integration artifacts:
-- **Skill**: scope lock + intent mapping (“check portfolio” → fetch context)
-- **Plugin toolpack**: registers **two coarse tools** to avoid tool-schema bloat
-  - `oculus_healthcheck`
-  - `oculus_get_context`
-- **Agent pack manifest**: allows launching via Hermes `/agent`
-
-Install everything (one command):
+### Fast path: one command install
 
 ```bash
 ./scripts/install_agent_pack.sh
 ```
 
-What the script does:
-- installs the skill into `~/.hermes/skills/oculus/`
-- installs the plugin into `~/.hermes/plugins/oculus/`
-- enables the plugin (if `hermes` is available)
-- creates the `oculus` Hermes profile (if missing)
-- sets `OCULUS_WORKDIR` in the oculus profile env to this repo path
-- installs the `/agent` manifest into `~/.hermes/agent-packs/`
+This installs, configures, and (when possible) auto-enables:
+- Skill → `~/.hermes/skills/oculus/`
+- Plugin → `~/.hermes/plugins/oculus/`
+- Skin → `~/.hermes/skins/oculus.yaml` (optional UI polish)
+- Agent pack manifest → `~/.hermes/agent-packs/oculus.yaml`
+- Profile → creates `oculus` profile if missing
+- Profile env → sets `OCULUS_WORKDIR` automatically
 
-Then:
-1) start Hermes anywhere: `hermes`
-2) launch: `/agent oculus`
+### Run
+1) Start Hermes:
+   - `hermes`
+2) In-session:
+   - `/agent oculus`
 
-Note:
-- If the oculus tools don’t show up, run `/tools` and enable the `oculus` toolset.
+If you don’t see the tools, enable them in-session:
+- `/tools` → enable toolset `oculus`
+
+### What Oculus adds to Hermes (low-bloat by design)
+Tools (2 total):
+- `oculus_healthcheck` — verify env/workdir/safety gate
+- `oculus_get_context` — fetch portfolio + WorldMonitor macro context + derived signals
+
+Skill:
+- Scope lock + intent mapping (e.g. “check portfolio” → fetch context)
+
+Skin:
+- Optional “Oculus” skin to match Hermes’ vibe:
+  - `hermes config set display.skin oculus`
+
+### Fallback (Tier 1): Hermes drives the repo via terminal
+Works everywhere, no plugin required:
+- Run `python main.py --run-once` via Hermes terminal tool and summarize output.
 
 ---
 

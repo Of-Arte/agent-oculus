@@ -21,10 +21,10 @@ cp -R "$SRC_DIR" "$DST_DIR"
 
 echo "Installed Hermes plugin to: $DST_DIR"
 
-echo "Next steps:"
-echo "  1) Enable plugin: hermes plugins enable oculus"
-echo "  2) In your oculus profile env, set OCULUS_WORKDIR to this repo path."
-echo "     Example: OCULUS_WORKDIR=$REPO_ROOT"
-
-echo "  3) Start Hermes and enable the plugin toolset 'oculus' (if not already)"
-echo "     via: /tools  (or hermes tools)"
+echo "Note: ./scripts/install_agent_pack.sh will also enable the plugin + set OCULUS_WORKDIR automatically (when Hermes is installed)."
+echo "Manual enable (if needed):"
+echo "  hermes plugins enable oculus"
+echo "Manual env (if needed):"
+echo "  hermes -p oculus config env-path"
+echo "  OCULUS_WORKDIR=$REPO_ROOT"
+echo "If tools don't appear in-session: /tools -> enable 'oculus'"
