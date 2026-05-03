@@ -8,7 +8,7 @@
 
 `Agent Oculus` merges real-time brokerage data (Public.com) with global macro signals (WorldMonitor) to drive the ATHENA options strategy framework. Built for Hermes agent.
 
-**Current State: In progress**
+**Current State: Core capabilities established, MVP live.**
 
 ---
 
